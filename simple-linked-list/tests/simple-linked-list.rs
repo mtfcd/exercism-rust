@@ -112,7 +112,6 @@ fn test_reverse() {
 }
 
 #[test]
-#[ignore]
 fn test_into_vector() {
     let mut v = Vec::new();
     let mut s = SimpleLinkedList::new();

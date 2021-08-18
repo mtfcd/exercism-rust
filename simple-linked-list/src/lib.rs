@@ -84,19 +84,21 @@ impl<T> SimpleLinkedList<T> {
 
         let mut prev = None;
         let mut head = self.head;
-        // self.head -> a (value, Some(b)) -> b (value, Some(c)) -> c (value, None)
-        // a = self.head; self.head = &a.next; a.next = None;
-        // a | head -> b -> c
-        // head = &b.next; b.next = &a;
-        // a <- b | head -> c
-        // c.next = &b;
+        // head -> a (value, Some(b)) -> b (value, Some(c)) -> c (value, None)
+        // head = &a.next; a.next = prev; prev = &a;
+        // a <- prev | head -> b -> c
+        // head = &b.next; b.next = prev; prev = &b;
+        // a <- b <- prev | head -> c
+        // head = &c.next; c.next = prev; prev = &c
+        // a <- b <- c <- prev | head
+        // head = prev;
         // a <- b <- c <- head
-        while let Some(a) = head {
-            self.head = a.next.take();
-            a_next.next = prev;
-            prev = a;
-            a = &mut self.head;
+        while let Some(mut a) = head {
+            head = a.next;
+            a.next = prev;
+            prev = Some(a);
         }
+        self.head = prev;
         self
     }
 }
@@ -124,6 +126,12 @@ impl<T> FromIterator<T> for SimpleLinkedList<T> {
 
 impl<T> Into<Vec<T>> for SimpleLinkedList<T> {
     fn into(self) -> Vec<T> {
-        unimplemented!()
+        let mut v = Vec::new();
+        let mut head = self.head;
+        while let Some(a) = head {
+            head = a.next;
+            v.push(a.value);
+        }
+        v
     }
 }
