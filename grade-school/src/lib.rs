@@ -7,26 +7,30 @@ use std::collections::{BTreeMap, BTreeSet};
 // case, we want to keep things relatively simple. The `Default` trait is not the point
 // of this exercise.
 #[allow(clippy::new_without_default)]
-pub struct School(BTreeMap<u32, BTreeSet<String>>);
+pub struct School{
+    grades: BTreeMap<u32, BTreeSet<String>>
+}
 
 impl School {
     pub fn new() -> School {
-        Self(BTreeMap::new())
+        Self {
+            grades: BTreeMap::new()
+        }
     }
 
     pub fn add(&mut self, grade: u32, student: &str) {
-        match self.0.get_mut(&grade) {
+        match self.grades.get_mut(&grade) {
             Some(students) => {students.insert(student.to_owned());},
             None => {
                 let mut students = BTreeSet::new();
                 students.insert(student.to_owned());
-                self.0.insert(grade, students);
+                self.grades.insert(grade, students);
             }
         }
     }
 
     pub fn grades(&self) -> Vec<u32> {
-        self.0.keys().cloned().collect()
+        self.grades.keys().cloned().collect()
     }
 
     // If `grade` returned a reference, `School` would be forced to keep a `Vec<String>`
@@ -34,7 +38,7 @@ impl School {
     // the internal structure can be completely arbitrary. The tradeoff is that some data
     // must be copied each time `grade` is called.
     pub fn grade(&self, grade: u32) -> Vec<String> {
-        match self.0.get(&grade) {
+        match self.grades.get(&grade) {
             Some(students) => students.iter().cloned().collect(),
             None => vec![]
         }
